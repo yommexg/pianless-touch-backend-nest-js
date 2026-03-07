@@ -1,98 +1,305 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# 🏥 Scalable Healthcare Platform (Microservices Architecture)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A modern **healthcare platform architecture** designed to support hospitals, clinics, doctors, and patients with scalable and reliable backend infrastructure.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+This project focuses on building a **production-ready healthcare backend** using **NestJS, Docker, event-driven architecture, and microservices**.
 
-## Description
+The platform supports **Web, Mobile, and Admin clients** and is designed to handle complex healthcare workflows such as appointments, electronic health records, lab results, and billing.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+# 🚀 Project Goals
 
-```bash
-$ npm install
+- Build a **scalable healthcare backend**
+- Implement **domain-driven microservices**
+- Support **real-world healthcare workflows**
+- Use **event-driven communication**
+- Enable **easy deployment with Docker**
+- Prepare infrastructure for **future Kubernetes orchestration**
+
+---
+
+# 🧠 Architecture Overview
+
+The system follows a **microservices architecture** where each domain is implemented as an independent service.
+
+```
+Clients (Web / Mobile / Admin)
+        |
+    API Gateway
+        |
+---------------------------------------------------
+|   Auth   |  Admin | Patient | Doctor | Appointment |
+| Billing  | Search |
+---------------------------------------------------
+        |
+      Event Bus
+      (RabbitMQ)
+        |
+-------------------------------------------------------------
+| EHR | Prescription | Lab | Notification | Audit | Analytics |
+-------------------------------------------------------------
+        |
+     File Service
+        |
+   S3 / MinIO Storage
 ```
 
-## Compile and run the project
+---
 
-```bash
-# development
-$ npm run start
+# ⚙️ Tech Stack
 
-# watch mode
-$ npm run start:dev
+## Backend
 
-# production mode
-$ npm run start:prod
+- **NestJS**
+- **Node.js**
+- **TypeScript**
+
+## Databases
+
+- **PostgreSQL** – transactional data
+- **MongoDB** – medical documents
+- **Elasticsearch** – search engine
+- **Redis** – caching & notifications
+- **ClickHouse** – analytics
+
+## Infrastructure
+
+- **Docker**
+- **RabbitMQ** (event bus)
+- **MinIO / AWS S3** (file storage)
+
+---
+
+# 🧩 Core Services
+
+### 🔐 Auth Service
+
+Handles authentication and authorization.
+
+Features:
+
+- JWT authentication
+- Role-based access
+- Login / registration
+- Session security
+
+---
+
+### 🧑‍🦱 Patient Service
+
+Manages patient accounts and profile information.
+
+Features:
+
+- Patient profiles
+- Medical history
+- Contact information
+
+---
+
+### 🩺 Doctor Service
+
+Manages doctor profiles and availability.
+
+Features:
+
+- Doctor registration
+- Specializations
+- Availability schedules
+
+---
+
+### 📅 Appointment Service
+
+Handles scheduling and appointment workflows.
+
+Features:
+
+- Appointment booking
+- Rescheduling
+- Cancellation
+- Appointment history
+
+---
+
+### 💳 Billing Service
+
+Handles payment processing and invoices.
+
+Features:
+
+- Medical billing
+- Payment records
+- Invoice generation
+
+---
+
+### 🔎 Search Service
+
+Fast search for doctors, hospitals, and medical data.
+
+Powered by:
+
+- Elasticsearch
+
+---
+
+# 🏥 Healthcare Domain Services
+
+### 📄 EHR Service
+
+Electronic Health Records management.
+
+### 💊 Prescription Service
+
+Handles digital prescriptions and medication records.
+
+### 🧪 Lab Service
+
+Manages lab tests and results.
+
+### 🔔 Notification Service
+
+Handles system notifications such as:
+
+- Appointment reminders
+- Lab results
+- Alerts
+
+Uses **Redis** for queueing and caching.
+
+### 📜 Audit Service
+
+Tracks system activities for compliance and security.
+
+### 📊 Analytics Service
+
+Processes large-scale healthcare data for reporting.
+
+Powered by **ClickHouse**.
+
+---
+
+# 📁 File Storage Service
+
+Healthcare platforms need to store files such as:
+
+- Medical scans
+- Lab reports
+- Imaging data
+- Documents
+
+Storage stack:
+
+```
+MinIO / AWS S3
++
+PostgreSQL (metadata)
 ```
 
-## Run tests
+---
 
-```bash
-# unit tests
-$ npm run test
+# 📨 Event Driven Architecture
 
-# e2e tests
-$ npm run test:e2e
+Services communicate asynchronously through **RabbitMQ**.
 
-# test coverage
-$ npm run test:cov
+Example events:
+
+```
+AppointmentCreated
+PrescriptionIssued
+LabResultUploaded
+PatientRegistered
 ```
 
-## Deployment
+Benefits:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+- Loose coupling
+- Better scalability
+- Improved reliability
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+---
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# 🐳 Dockerized Infrastructure
+
+All services run inside **Docker containers**.
+
+Benefits:
+
+- Consistent environments
+- Easy deployment
+- Service isolation
+- Simplified CI/CD pipelines
+
+Future upgrade:
+
+```
+Docker → Kubernetes
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+# 📦 Project Structure
 
-Check out a few resources that may come in handy when working with NestJS:
+```
+healthcare-platform
+│
+├── api-gateway
+│
+├── services
+│   ├── auth-service
+│   ├── patient-service
+│   ├── doctor-service
+│   ├── appointment-service
+│   ├── billing-service
+│   └── search-service
+│
+├── healthcare-services
+│   ├── ehr-service
+│   ├── prescription-service
+│   ├── lab-service
+│   ├── notification-service
+│   ├── audit-service
+│   └── analytics-service
+│
+├── infrastructure
+│   ├── docker
+│   ├── rabbitmq
+│   └── database
+│
+└── file-service
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+---
 
-## Support
+# 🧪 Future Improvements
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- Kubernetes deployment
+- API rate limiting
+- Healthcare compliance layer
+- Advanced monitoring
+- Observability (Prometheus + Grafana)
+- AI-driven medical analytics
 
-## Stay in touch
+---
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# 💡 Inspiration
 
-## License
+This project is a **next-generation redesign** inspired by a previous healthcare system I built called **Painless Touch Care**.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+The goal of this version is to apply **better architecture, scalability, and modern backend practices**.
+
+---
+
+# 🤝 Contributions
+
+Contributions, suggestions, and discussions are welcome.
+
+If you're interested in **healthtech architecture or microservices design**, feel free to collaborate.
+
+---
+
+# 📜 License
+
+MIT License @ Painless Touch Care LTD

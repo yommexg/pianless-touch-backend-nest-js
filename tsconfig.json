@@ -22,11 +22,29 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
+      "@app/logger": [
+        "libs/logger/src"
+      ],
+      "@app/logger/*": [
+        "libs/logger/src/*"
+      ],
+      "@app/mongoose": [
+        "libs/mongoose/src"
+      ],
+      "@app/mongoose/*": [
+        "libs/mongoose/src/*"
+      ],
       "@app/prisma": [
         "libs/prisma/src"
       ],
       "@app/prisma/*": [
         "libs/prisma/src/*"
+      ],
+      "@app/rmq": [
+        "libs/rmq/src"
+      ],
+      "@app/rmq/*": [
+        "libs/rmq/src/*"
       ],
       "@app/verify": [
         "libs/verify/src"
@@ -34,17 +52,11 @@
       "@app/verify/*": [
         "libs/verify/src/*"
       ],
-      "y/mongoose": [
-        "libs/mongoose/src"
+      "y/redis": [
+        "libs/redis/src"
       ],
-      "y/mongoose/*": [
-        "libs/mongoose/src/*"
-      ],
-      "y/rmq": [
-        "libs/rmq/src"
-      ],
-      "y/rmq/*": [
-        "libs/rmq/src/*"
+      "y/redis/*": [
+        "libs/redis/src/*"
       ]
     }
   }

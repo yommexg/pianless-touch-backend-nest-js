@@ -82,6 +82,15 @@
         "tsConfigPath": "apps/laboratory/tsconfig.app.json"
       }
     },
+    "logger": {
+      "type": "library",
+      "root": "libs/logger",
+      "entryFile": "index",
+      "sourceRoot": "libs/logger/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    },
     "mongoose": {
       "type": "library",
       "root": "libs/mongoose",
@@ -125,6 +134,15 @@
       "sourceRoot": "apps/records/src",
       "compilerOptions": {
         "tsConfigPath": "apps/records/tsconfig.app.json"
+      }
+    },
+    "redis": {
+      "type": "library",
+      "root": "libs/redis",
+      "entryFile": "index",
+      "sourceRoot": "libs/redis/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/redis/tsconfig.lib.json"
       }
     },
     "rmq": {
