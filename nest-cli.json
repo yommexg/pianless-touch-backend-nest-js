@@ -5,7 +5,14 @@
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/auth/tsconfig.app.json"
+    "tsConfigPath": "apps/auth/tsconfig.app.json",
+    "assets": [
+      {
+        "include": "libs/mail/src/templates/**/*",
+        "outDir": "dist/libs/mail/src",
+        "watchAssets": true
+      }
+    ]
   },
   "monorepo": true,
   "root": "apps/auth",
@@ -89,6 +96,15 @@
       "sourceRoot": "libs/logger/src",
       "compilerOptions": {
         "tsConfigPath": "libs/logger/tsconfig.lib.json"
+      }
+    },
+    "mail": {
+      "type": "library",
+      "root": "libs/mail",
+      "entryFile": "index",
+      "sourceRoot": "libs/mail/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/mail/tsconfig.lib.json"
       }
     },
     "mongoose": {

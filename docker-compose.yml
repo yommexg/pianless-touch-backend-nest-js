@@ -1,0 +1,51 @@
+services:
+  # --- Redis Service (For OTPs, TTL, and Caching) ---
+  redis:
+    image: redis:alpine
+    env_file:
+      - ./apps/auth/.env
+    command: >
+      sh -c "redis-server --appendonly yes --requirepass $$REDIS_PASSWORD"
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - painless_touch_care_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$$REDIS_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+    # ====== Authentication Service ========
+  auth:
+    build:
+      context: .
+      dockerfile: ./apps/auth/Dockerfile
+      target: development
+    command: npm run start:dev auth -- --poll 1000
+    env_file:
+      - ./apps/auth/.env
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - CHOKIDAR_INTERVAL=1000
+    ports:
+      - "2001:2001"
+    volumes:
+      - .:/usr/src/app:cached
+      - /usr/src/app/node_modules
+    networks:
+      - painless_touch_care_network
+
+volumes:
+  redis_data:
+
+networks:
+  painless_touch_care_network:
+    driver: bridge

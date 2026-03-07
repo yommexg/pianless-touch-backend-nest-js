@@ -28,6 +28,12 @@
       "@app/logger/*": [
         "libs/logger/src/*"
       ],
+      "@app/mail": [
+        "libs/mail/src"
+      ],
+      "@app/mail/*": [
+        "libs/mail/src/*"
+      ],
       "@app/mongoose": [
         "libs/mongoose/src"
       ],
@@ -40,6 +46,12 @@
       "@app/prisma/*": [
         "libs/prisma/src/*"
       ],
+      "@app/redis": [
+        "libs/redis/src"
+      ],
+      "@app/redis/*": [
+        "libs/redis/src/*"
+      ],
       "@app/rmq": [
         "libs/rmq/src"
       ],
@@ -51,12 +63,6 @@
       ],
       "@app/verify/*": [
         "libs/verify/src/*"
-      ],
-      "y/redis": [
-        "libs/redis/src"
-      ],
-      "y/redis/*": [
-        "libs/redis/src/*"
       ]
     }
   }

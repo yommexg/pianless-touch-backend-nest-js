@@ -7,7 +7,18 @@ import * as Joi from 'joi';
     NestConfigModule.forRoot({
       isGlobal: true,
       validationSchema: Joi.object({
-        PORT: Joi.number().required(),
+        PORT: Joi.string().required(),
+
+        REDIS_HOST: Joi.string().required(),
+        REDIS_PORT: Joi.string().required(),
+        REDIS_PASSWORD: Joi.string().required(),
+
+        MAIL_HOST: Joi.string().required(),
+        MAIL_PORT: Joi.string().required(),
+        MAIL_USER: Joi.string().required(),
+        MAIL_PASS: Joi.string().required(),
+        MAIL_FROM: Joi.string().required(),
+
         // AT_SECRET: Joi.string().required(),
         // RT_SECRET: Joi.string().required(),
         // AT_EXPIRATION: Joi.string().required(),
