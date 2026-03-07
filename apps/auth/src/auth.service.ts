@@ -22,12 +22,8 @@ export class AuthService {
 
     await this.redis.set(redisKey, otp, 'EX', 300);
 
-    try {
-      await this.mailService.sendOtpEmail(email, otp);
-      this.logger.log(`OTP email sent successfully to ${email}`, 'AuthService');
-    } catch (error) {
-      console.log('Mial service', error);
-    }
+    await this.mailService.sendOtpEmail(email, otp);
+    this.logger.log(`OTP email sent successfully to ${email}`, 'AuthService');
 
     return {
       message: `An OTP has been sent to ${email}.`,
