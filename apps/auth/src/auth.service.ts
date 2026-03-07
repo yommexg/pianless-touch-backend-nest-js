@@ -16,6 +16,7 @@ export class AuthService {
 
   async requestOtp(dto: RequestEmailOtpDto): Promise<{ message: string }> {
     const { email } = dto;
+
     const otp = this.generateOTP();
 
     const redisKey = `otp:${email}`;
