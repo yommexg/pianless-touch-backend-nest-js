@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./apps/painless-touch-backend-v2/test/jest-e2e.json"
   },
   "dependencies": {
+    "@nest-lab/throttler-storage-redis": "^1.2.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.3",
@@ -88,6 +89,7 @@
     ],
     "moduleNameMapper": {
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
+      "^@app/filters(|/.*)$": "<rootDir>/libs/filters/src/$1",
       "^@app/mail(|/.*)$": "<rootDir>/libs/mail/src/$1",
       "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
       "^@app/verify(|/.*)$": "<rootDir>/libs/verify/src/$1",

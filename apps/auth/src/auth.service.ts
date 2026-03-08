@@ -23,7 +23,7 @@ export class AuthService {
 
     await this.redis.set(redisKey, otp, 'EX', 300);
 
-    await this.mailService.sendOtpEmail(email, otp);
+    // await this.mailService.sendOtpEmail(email, otp);
     this.logger.log(`OTP email sent successfully to ${email}`, 'AuthService');
 
     return {

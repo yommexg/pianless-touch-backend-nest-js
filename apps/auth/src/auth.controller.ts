@@ -4,21 +4,20 @@ import {
   Body,
   HttpCode,
   HttpStatus,
-  UseFilters,
+  UseGuards,
 } from '@nestjs/common';
-
-import { MailExceptionsFilter } from '@app/mail';
 
 import { AuthService } from './auth.service';
 import { RequestEmailOtpDto } from './dto';
+import { ThrottlerEmailGuard } from './throttler';
 
 @Controller('auth')
+@UseGuards(ThrottlerEmailGuard)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup/otp')
   @HttpCode(HttpStatus.OK)
-  @UseFilters(MailExceptionsFilter)
   async requestOtp(@Body() dto: RequestEmailOtpDto) {
     return this.authService.requestOtp(dto);
   }

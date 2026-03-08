@@ -19,7 +19,7 @@ type ExceptionResponse = {
   response: string | object;
 };
 
-@Catch()
+@Catch(PrismaClientKnownRequestError, PrismaClientValidationError)
 export class PrismaExceptionsFilter extends BaseExceptionFilter {
   constructor(
     private readonly logger: LoggerService,
@@ -48,7 +48,7 @@ export class PrismaExceptionsFilter extends BaseExceptionFilter {
       return fields as string[];
     }
 
-    return [];
+    return Array.isArray(meta.target) ? (meta.target as string[]) : [];
   }
 
   catch(exception: unknown, host: ArgumentsHost): void {
