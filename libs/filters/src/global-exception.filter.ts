@@ -11,6 +11,7 @@ import { LoggerService } from '@app/logger';
 interface NestErrorResponse {
   message?: string | string[];
   error?: string;
+  data?: object;
 }
 
 interface BrevoError extends Error {
@@ -30,6 +31,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message: string | string[] = 'Internal server error';
     let error = 'InternalError';
+    let data = {};
 
     // 1. Handle standard NestJS HttpExceptions (Throttler, Validation, etc.)
     if (exception instanceof HttpException) {
@@ -39,8 +41,23 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
       if (typeof res === 'object') {
         message = res.message || 'Error occurred';
         error = res.error || 'HttpException';
+        data = {};
       } else {
         message = res;
+      }
+
+      if (status === HttpStatus.TOO_MANY_REQUESTS) {
+        const header = response.getHeader('Retry-After');
+        const retryAfter = Array.isArray(header) ? header[0] : header;
+
+        const waitTime = Number(retryAfter) || 1;
+        const unit = waitTime === 1 ? 'minute' : 'minutes';
+
+        message = `Too many attempts. Please try again in ${waitTime} ${unit}.`;
+        error = 'Throttled';
+        data = {
+          waitTimeMinutes: waitTime,
+        };
       }
     }
     // 2. Handle Brevo / Mail Specific Errors (Formerly in MailFilter)
@@ -68,7 +85,8 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
       timestamp: new Date().toISOString(),
       path: request.url,
       message: Array.isArray(message) ? message.join(', ') : message,
-      error: error,
+      error,
+      data,
     };
 
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {

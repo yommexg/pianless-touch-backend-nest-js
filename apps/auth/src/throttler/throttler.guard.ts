@@ -1,10 +1,15 @@
-import { ThrottlerGuard } from '@nestjs/throttler';
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Request } from 'express';
+import { ThrottlerGuard, ThrottlerLimitDetail } from '@nestjs/throttler';
+import {
+  Injectable,
+  ExecutionContext,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
+import { Request, Response } from 'express';
 
 @Injectable()
 export class ThrottlerEmailGuard extends ThrottlerGuard {
-  protected getTracker(req: Request): Promise<string> {
+  protected override getTracker(req: Request): Promise<string> {
     const body = req.body as { email?: string };
 
     const tracker = body?.email
@@ -14,14 +19,26 @@ export class ThrottlerEmailGuard extends ThrottlerGuard {
     return Promise.resolve(tracker);
   }
 
-  protected throwThrottlingException(): Promise<void> {
+  protected override throwThrottlingException(
+    context: ExecutionContext,
+    throttlerLimitDetail: ThrottlerLimitDetail,
+  ): Promise<void> {
+    const { timeToBlockExpire, timeToExpire } = throttlerLimitDetail;
+    console.log(throttlerLimitDetail);
+
+    const totalSeconds =
+      timeToBlockExpire > 0
+        ? timeToBlockExpire
+        : Math.ceil(timeToExpire / 1000);
+
+    const minutesToWait = Math.ceil(totalSeconds / 60);
+
+    const response = context.switchToHttp().getResponse<Response>();
+
+    response.setHeader('Retry-After', minutesToWait.toString());
+
     throw new HttpException(
-      {
-        statusCode: HttpStatus.TOO_MANY_REQUESTS,
-        message:
-          'Too many OTP requests. Please wait a moment before trying again.',
-        error: 'Too Many Requests',
-      },
+      'Too many requests. Please try again later.',
       HttpStatus.TOO_MANY_REQUESTS,
     );
   }
