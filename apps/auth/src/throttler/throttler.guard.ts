@@ -24,7 +24,6 @@ export class ThrottlerEmailGuard extends ThrottlerGuard {
     throttlerLimitDetail: ThrottlerLimitDetail,
   ): Promise<void> {
     const { timeToBlockExpire, timeToExpire } = throttlerLimitDetail;
-    console.log(throttlerLimitDetail);
 
     const totalSeconds =
       timeToBlockExpire > 0

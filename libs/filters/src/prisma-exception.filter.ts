@@ -17,6 +17,7 @@ type ExceptionResponse = {
   timestamp: string;
   path: string;
   response: string | object;
+  success: boolean;
 };
 
 @Catch(PrismaClientKnownRequestError, PrismaClientValidationError)
@@ -57,6 +58,7 @@ export class PrismaExceptionsFilter extends BaseExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     const responseObject: ExceptionResponse = {
+      success: false,
       statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
       timestamp: new Date().toISOString(),
       path: request.url,
@@ -87,7 +89,9 @@ export class PrismaExceptionsFilter extends BaseExceptionFilter {
         ? JSON.stringify(responseObject.response)
         : responseObject.response;
 
-    this.logger.error(logMessage, undefined, PrismaExceptionsFilter.name);
+    const stack = exception instanceof Error ? exception.stack : undefined;
+    this.logger.error(logMessage, stack, PrismaExceptionsFilter.name);
+
     response.status(responseObject.statusCode).json(responseObject);
   }
 }

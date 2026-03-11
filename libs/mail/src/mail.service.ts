@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
+
 import { SentMessageInfo } from 'nodemailer';
-import { MAIL_SUBJECTS, MAIL_TEMPLATES, MailTemplate } from './mail.constants';
 import { join } from 'path';
+
+import { MAIL_SUBJECTS, MAIL_TEMPLATES, MailTemplate } from './mail.constants';
 
 @Injectable()
 export class MailService {

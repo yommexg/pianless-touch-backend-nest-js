@@ -12,6 +12,7 @@ interface NestErrorResponse {
   message?: string | string[];
   error?: string;
   data?: object;
+  success: boolean;
 }
 
 interface BrevoError extends Error {
@@ -81,6 +82,7 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
 
     // Final Response Formatting
     const responseObject = {
+      success: false,
       statusCode: status,
       timestamp: new Date().toISOString(),
       path: request.url,
@@ -97,9 +99,13 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     } else if (status === HttpStatus.TOO_MANY_REQUESTS) {
       this.logger.warn(
         `[SECURITY] Throttled: ${request.url} - ${responseObject.message}`,
+        'ThrottlerExceptionFilter',
       );
     } else {
-      this.logger.log(`[INFO] ${status} - ${responseObject.message}`);
+      this.logger.warn(
+        `[INFO] ${status} - ${responseObject.message}`,
+        'GlobalExceptionsFilter',
+      );
     }
 
     response.status(status).json(responseObject);

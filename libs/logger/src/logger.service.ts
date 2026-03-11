@@ -12,6 +12,14 @@ export class LoggerService extends ConsoleLogger {
     }
   }
 
+  warn(message: any, context?: string) {
+    if (this.isProduction) {
+      this.printJson('warn', message, context);
+    } else {
+      super.warn(message, context);
+    }
+  }
+
   error(message: any, stack?: string, context?: string) {
     if (this.isProduction) {
       this.printJson('error', message, context, stack);
