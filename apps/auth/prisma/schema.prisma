@@ -1,0 +1,24 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"            
+  output   = "../../../libs/prisma/src/generated"
+  moduleFormat = "cjs"
+  importFileExtension = ""
+}
+
+
+model User {
+  id            Int          @id @default(autoincrement())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  email         String       @unique
+  phone         String       
+  hashPwd       String
+  hashedRt      String?   
+
+  @@map("users")
+}

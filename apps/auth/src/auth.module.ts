@@ -9,6 +9,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { ConfigModule } from './config';
 import { ThrottlerEmailGuard, ThrottlerModule } from './throttler';
+import { PrismaModule } from '@app/prisma';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ThrottlerEmailGuard, ThrottlerModule } from './throttler';
     RedisModule,
     MailModule,
     ThrottlerModule,
+    PrismaModule,
   ],
   controllers: [AuthController],
   providers: [

@@ -1,4 +1,21 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+
+import { PrismaPg } from '@prisma/adapter-pg';
+import { PrismaClient } from './generated/client';
 
 @Injectable()
-export class PrismaService {}
+export class PrismaService extends PrismaClient {
+  constructor(config: ConfigService) {
+    const adapter = new PrismaPg({
+      connectionString: config.get<string>('DATABASE_URL'),
+    });
+    super({ adapter });
+  }
+
+  async cleanDb() {
+    if (process.env.NODE_ENV === 'production') return;
+
+    await this.$transaction([this.user.deleteMany()]);
+  }
+}

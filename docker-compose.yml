@@ -1,13 +1,10 @@
 services:
   # --- PostgreSQL Database ---
   postgres:
-    image: postgres:15-alpine
+    image: postgres:17-alpine
+    container_name: painless_postgres
     env_file:
       - ./apps/auth/.env
-    environment:
-      - POSTGRES_USER=${DB_USERNAME}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
     ports:
       - "5432:5432"
     volumes:
@@ -19,6 +16,7 @@ services:
   # --- Redis Service (For OTPs, TTL, and Caching) ---
   redis:
     image: redis:alpine
+    container_name: painless_redis
     env_file:
       - ./apps/auth/.env
     command: >
@@ -42,7 +40,9 @@ services:
       context: .
       dockerfile: ./apps/auth/Dockerfile
       target: development
-    command: npm run start:dev auth -- --poll 1000
+    container_name: painless_auth
+    command: >
+      sh -c "npm run start:dev auth -- --poll 1000"
     env_file:
       - ./apps/auth/.env
     depends_on:
@@ -56,6 +56,7 @@ services:
       - CHOKIDAR_INTERVAL=1000
     ports:
       - "2001:2001"
+      - "5555:5555"
     volumes:
       - .:/usr/src/app:cached
       - /usr/src/app/node_modules

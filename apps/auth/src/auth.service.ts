@@ -3,14 +3,18 @@ import {
   UnauthorizedException,
   NotFoundException,
 } from '@nestjs/common';
+
 import { RedisService } from '@app/redis';
 import { LoggerService } from '@app/logger';
 import { MailService } from '@app/mail';
+import { PrismaService } from '@app/prisma';
+
 import { RequestEmailOtpDto, VerifyEmailDto } from './dto';
 
 export interface AuthReturnProps {
   message: string;
   success: boolean;
+  data?: object;
 }
 
 @Injectable()
@@ -18,7 +22,8 @@ export class AuthService {
   constructor(
     private readonly redis: RedisService,
     private readonly logger: LoggerService,
-    private readonly mailService: MailService,
+    private readonly mail: MailService,
+    private readonly prisma: PrismaService,
   ) {}
 
   async requestOtp(dto: RequestEmailOtpDto): Promise<AuthReturnProps> {
@@ -30,39 +35,54 @@ export class AuthService {
 
     console.log(otp);
 
-    // await this.mailService.sendOtpEmail(email, otp);
+    // await this.mail.sendOtpEmail(email, otp);
     this.logger.log(`OTP email sent successfully to ${email}`, 'AuthService');
 
     return {
-      message: `An OTP has been sent to ${email}.`,
+      message: `OTP Sent Sucessfully.`,
       success: true,
+      data: {
+        email,
+      },
     };
   }
 
   async verifyOtp(dto: VerifyEmailDto): Promise<AuthReturnProps> {
-    const redisKey = `otp:${dto.email}`;
+    const { email, otp } = dto;
+
+    const redisKey = `otp:${email}`;
     const storedOtp = await this.redis.get(redisKey);
 
     if (!storedOtp) {
       throw new NotFoundException(
-        `No OTP found for ${dto.email} or it has expired.`,
+        `No OTP found for ${email} or it has expired.`,
       );
     }
 
-    if (storedOtp !== dto.otp) {
-      throw new UnauthorizedException(`Incorrect OTP for ${dto.email}.`);
+    if (storedOtp !== otp) {
+      throw new UnauthorizedException(`Incorrect OTP for ${email}.`);
     }
+
+    await this.prisma.user.upsert({
+      where: { email },
+      update: {},
+      create: {
+        email: email,
+        phone: '',
+        hashPwd: '',
+      },
+    });
 
     await this.redis.del(redisKey);
 
-    this.logger.log(
-      `OTP verified successfully for ${dto.email}`,
-      'AuthService',
-    );
+    this.logger.log(`OTP verified successfully for ${email}`, 'AuthService');
 
     return {
-      message: `Email ${dto.email} verified successfully.`,
+      message: `Email verified successfully.`,
       success: true,
+      data: {
+        email,
+      },
     };
   }
 
