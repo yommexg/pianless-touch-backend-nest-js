@@ -22,22 +22,60 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@app/filters": ["libs/filters/src"],
-      "@app/filters/*": ["libs/filters/src/*"],
-      "@app/logger": ["libs/logger/src"],
-      "@app/logger/*": ["libs/logger/src/*"],
-      "@app/mail": ["libs/mail/src"],
-      "@app/mail/*": ["libs/mail/src/*"],
-      "@app/mongoose": ["libs/mongoose/src"],
-      "@app/mongoose/*": ["libs/mongoose/src/*"],
-      "@app/prisma": ["libs/prisma/src"],
-      "@app/prisma/*": ["libs/prisma/src/*"],
-      "@app/redis": ["libs/redis/src"],
-      "@app/redis/*": ["libs/redis/src/*"],
-      "@app/rmq": ["libs/rmq/src"],
-      "@app/rmq/*": ["libs/rmq/src/*"],
-      "@app/verify": ["libs/verify/src"],
-      "@app/verify/*": ["libs/verify/src/*"]
+      "@app/filters": [
+        "libs/filters/src"
+      ],
+      "@app/filters/*": [
+        "libs/filters/src/*"
+      ],
+      "@app/logger": [
+        "libs/logger/src"
+      ],
+      "@app/logger/*": [
+        "libs/logger/src/*"
+      ],
+      "@app/mail": [
+        "libs/mail/src"
+      ],
+      "@app/mail/*": [
+        "libs/mail/src/*"
+      ],
+      "@app/mongoose": [
+        "libs/mongoose/src"
+      ],
+      "@app/mongoose/*": [
+        "libs/mongoose/src/*"
+      ],
+      "@app/prisma": [
+        "libs/prisma/src"
+      ],
+      "@app/prisma/*": [
+        "libs/prisma/src/*"
+      ],
+      "@app/redis": [
+        "libs/redis/src"
+      ],
+      "@app/redis/*": [
+        "libs/redis/src/*"
+      ],
+      "@app/rmq": [
+        "libs/rmq/src"
+      ],
+      "@app/rmq/*": [
+        "libs/rmq/src/*"
+      ],
+      "@app/sms": [
+        "libs/sms/src"
+      ],
+      "@app/sms/*": [
+        "libs/sms/src/*"
+      ],
+      "@app/verify": [
+        "libs/verify/src"
+      ],
+      "@app/verify/*": [
+        "libs/verify/src/*"
+      ]
     }
   }
 }

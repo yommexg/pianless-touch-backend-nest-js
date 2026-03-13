@@ -16,8 +16,8 @@ model User {
   updatedAt     DateTime     @updatedAt
 
   email         String       @unique
-  phone         String       
-  hashPwd       String
+  phone         String?       
+  hashPwd       String?
   hashedRt      String?   
 
   @@map("users")

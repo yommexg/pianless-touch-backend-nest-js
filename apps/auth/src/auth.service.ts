@@ -9,7 +9,13 @@ import { LoggerService } from '@app/logger';
 import { MailService } from '@app/mail';
 import { PrismaService } from '@app/prisma';
 
-import { RequestEmailOtpDto, VerifyEmailDto } from './dto';
+import {
+  RequestEmailOtpDto,
+  RequestPhoneOtpDto,
+  VerifyEmailDto,
+  VerifyPhoneDto,
+} from './dto';
+import { SmsService } from '@app/sms';
 
 export interface AuthReturnProps {
   message: string;
@@ -23,6 +29,7 @@ export class AuthService {
     private readonly redis: RedisService,
     private readonly logger: LoggerService,
     private readonly mail: MailService,
+    private readonly sms: SmsService,
     private readonly prisma: PrismaService,
   ) {}
 
@@ -67,9 +74,7 @@ export class AuthService {
       where: { email },
       update: {},
       create: {
-        email: email,
-        phone: '',
-        hashPwd: '',
+        email,
       },
     });
 
@@ -82,6 +87,60 @@ export class AuthService {
       success: true,
       data: {
         email,
+      },
+    };
+  }
+
+  async requestPhoneOtp(dto: RequestPhoneOtpDto): Promise<AuthReturnProps> {
+    const { email, phone } = dto;
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      this.logger.error(
+        `Failed OTP request: User with email ${email} does not exist.`,
+        'AuthService',
+      );
+      throw new NotFoundException(`User with email ${email} not found.`);
+    }
+
+    await this.sms.sendPhoneOtp(phone);
+
+    this.logger.log(`OTP generated successfully for ${phone}`, 'AuthService');
+
+    return {
+      message: `Phone OTP Sent Successfully.`,
+      success: true,
+      data: {
+        email,
+        phone,
+      },
+    };
+  }
+
+  async verifyPhoneOtp(dto: VerifyPhoneDto): Promise<AuthReturnProps> {
+    const { email, phone, otp } = dto;
+
+    await this.sms.verifyPhoneOtp(phone, otp);
+
+    const updatedUser = await this.prisma.user.update({
+      where: { email },
+      data: { phone },
+    });
+
+    this.logger.log(
+      `Phone verified and updated for user: ${email}`,
+      'AuthService',
+    );
+
+    return {
+      message: `Phone number verified and updated successfully.`,
+      success: true,
+      data: {
+        email: updatedUser.email,
+        phone: updatedUser.phone,
       },
     };
   }

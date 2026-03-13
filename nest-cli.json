@@ -188,6 +188,15 @@
         "tsConfigPath": "apps/search/tsconfig.app.json"
       }
     },
+    "sms": {
+      "type": "library",
+      "root": "libs/sms",
+      "entryFile": "index",
+      "sourceRoot": "libs/sms/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/sms/tsconfig.lib.json"
+      }
+    },
     "verify": {
       "type": "library",
       "root": "libs/verify",

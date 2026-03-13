@@ -1,8 +1,8 @@
 import { Transform, TransformFnParams } from 'class-transformer';
 import { IsNotEmpty, IsString, Length, Matches } from 'class-validator';
-import { RequestEmailOtpDto } from './request-email-otp.dto';
+import { RequestPhoneOtpDto } from './request-phone-otp.dto';
 
-export class VerifyEmailDto extends RequestEmailOtpDto {
+export class VerifyPhoneDto extends RequestPhoneOtpDto {
   @IsString()
   @IsNotEmpty()
   @Length(6, 6, { message: 'OTP must be exactly 6 digits' })

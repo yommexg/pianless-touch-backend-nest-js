@@ -19,6 +19,11 @@ import * as Joi from 'joi';
         MAIL_PASS: Joi.string().required(),
         MAIL_FROM: Joi.string().required(),
 
+        TWILIO_ACCOUNT_SID: Joi.string().required(),
+        TWILIO_AUTH_TOKEN: Joi.string().required(),
+        TWILIO_MESSAGE_SERVICE_ID: Joi.string().required(),
+        TWILIO_VERIFY_SERVICE_SID: Joi.string().required(),
+
         // AT_SECRET: Joi.string().required(),
         // RT_SECRET: Joi.string().required(),
         // AT_EXPIRATION: Joi.string().required(),

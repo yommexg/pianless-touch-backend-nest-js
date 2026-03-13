@@ -4,8 +4,8 @@ CREATE TABLE "users" (
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
     "email" TEXT NOT NULL,
-    "phone" TEXT NOT NULL,
-    "hashPwd" TEXT NOT NULL,
+    "phone" TEXT,
+    "hashPwd" TEXT,
     "hashedRt" TEXT,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")

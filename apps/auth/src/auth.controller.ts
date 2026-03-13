@@ -8,7 +8,12 @@ import {
 } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
-import { RequestEmailOtpDto, VerifyEmailDto } from './dto';
+import {
+  RequestEmailOtpDto,
+  RequestPhoneOtpDto,
+  VerifyEmailDto,
+  VerifyPhoneDto,
+} from './dto';
 import { ThrottlerEmailGuard } from './throttler';
 
 @Controller('auth')
@@ -26,5 +31,17 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async verifyOtp(@Body() dto: VerifyEmailDto) {
     return this.authService.verifyOtp(dto);
+  }
+
+  @Post('request-phone-otp')
+  @HttpCode(HttpStatus.OK)
+  async requestPhoneOtp(@Body() dto: RequestPhoneOtpDto) {
+    return this.authService.requestPhoneOtp(dto);
+  }
+
+  @Post('verify-phone-otp')
+  @HttpCode(HttpStatus.OK)
+  async verifyPhoneOtp(@Body() dto: VerifyPhoneDto) {
+    return this.authService.verifyPhoneOtp(dto);
   }
 }
