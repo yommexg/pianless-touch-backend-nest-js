@@ -5,12 +5,14 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { BaseExceptionFilter, HttpAdapterHost } from '@nestjs/core';
+
 import { Request, Response } from 'express';
-import { LoggerService } from '@app/logger';
 import {
   PrismaClientValidationError,
   PrismaClientKnownRequestError,
 } from '@prisma/client/runtime/client';
+
+import { LoggerService } from '@app/logger';
 
 type ExceptionResponse = {
   statusCode: number;
@@ -90,7 +92,7 @@ export class PrismaExceptionsFilter extends BaseExceptionFilter {
         : responseObject.response;
 
     const stack = exception instanceof Error ? exception.stack : undefined;
-    this.logger.error(logMessage, stack, PrismaExceptionsFilter.name);
+    this.logger.error(logMessage, PrismaExceptionsFilter.name, stack);
 
     response.status(responseObject.statusCode).json(responseObject);
   }

@@ -2,6 +2,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  ConflictException,
 } from '@nestjs/common';
 
 import { RedisService } from '@app/redis';
@@ -99,11 +100,21 @@ export class AuthService {
     });
 
     if (!user) {
-      this.logger.error(
-        `Failed OTP request: User with email ${email} does not exist.`,
-        'AuthService',
-      );
       throw new NotFoundException(`User with email ${email} not found.`);
+    }
+
+    const userWithThisPhone = await this.prisma.user.findUnique({
+      where: { phone },
+    });
+
+    if (userWithThisPhone) {
+      const isOwnPhone = userWithThisPhone.email === email;
+
+      throw new ConflictException(
+        isOwnPhone
+          ? `This phone number is already linked to your account.`
+          : `This phone number is already in use by another account.`,
+      );
     }
 
     await this.sms.sendPhoneOtp(phone);

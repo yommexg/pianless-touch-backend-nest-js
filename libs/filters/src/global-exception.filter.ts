@@ -5,7 +5,9 @@ import {
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
+
 import { Request, Response } from 'express';
+
 import { LoggerService } from '@app/logger';
 
 interface NestErrorResponse {
@@ -13,11 +15,6 @@ interface NestErrorResponse {
   error?: string;
   data?: object;
   success: boolean;
-}
-
-interface BrevoError extends Error {
-  code?: string;
-  responseCode?: number;
 }
 
 @Catch()
@@ -61,24 +58,6 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
         };
       }
     }
-    // 2. Handle Brevo / Mail Specific Errors (Formerly in MailFilter)
-    else if (this.isMailError(exception)) {
-      const mailErr = exception as BrevoError;
-      error = 'MailServiceError';
-
-      if (mailErr.code === 'EENVELOPE') {
-        status = HttpStatus.BAD_REQUEST;
-        message = 'Invalid recipient email address';
-      } else if (
-        mailErr.code === 'ETIMEDOUT' ||
-        mailErr.code === 'ECONNREFUSED'
-      ) {
-        status = HttpStatus.SERVICE_UNAVAILABLE;
-        message = 'Could not connect to the email server (Brevo)';
-      } else {
-        message = mailErr.message || 'An unexpected mail error occurred';
-      }
-    }
 
     // Final Response Formatting
     const responseObject = {
@@ -94,26 +73,22 @@ export class GlobalExceptionsFilter implements ExceptionFilter {
     if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(
         `[CRITICAL] ${responseObject.message}`,
+        GlobalExceptionsFilter.name,
         (exception as Error).stack,
       );
     } else if (status === HttpStatus.TOO_MANY_REQUESTS) {
-      this.logger.warn(
+      this.logger.error(
         `[SECURITY] Throttled: ${request.url} - ${responseObject.message}`,
-        'ThrottlerExceptionFilter',
+        GlobalExceptionsFilter.name,
+        (exception as Error).stack,
       );
     } else {
-      this.logger.warn(
+      this.logger.error(
         `[INFO] ${status} - ${responseObject.message}`,
-        'GlobalExceptionsFilter',
+        GlobalExceptionsFilter.name,
       );
     }
 
     response.status(status).json(responseObject);
-  }
-
-  private isMailError(exception: unknown): boolean {
-    const err = exception as Record<string, unknown>;
-
-    return !!(err && (err.code || err.responseCode || err.command));
   }
 }

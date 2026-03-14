@@ -52,6 +52,12 @@
       "@app/prisma/*": [
         "libs/prisma/src/*"
       ],
+      "@app/push-notifications": [
+        "libs/push-notifications/src"
+      ],
+      "@app/push-notifications/*": [
+        "libs/push-notifications/src/*"
+      ],
       "@app/redis": [
         "libs/redis/src"
       ],
@@ -69,12 +75,6 @@
       ],
       "@app/sms/*": [
         "libs/sms/src/*"
-      ],
-      "@app/verify": [
-        "libs/verify/src"
-      ],
-      "@app/verify/*": [
-        "libs/verify/src/*"
       ]
     }
   }

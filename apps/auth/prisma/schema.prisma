@@ -11,14 +11,41 @@ generator client {
 
 
 model User {
-  id            Int          @id @default(autoincrement())
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
+  id            Int         @id @default(autoincrement())
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
-  email         String       @unique
-  phone         String?       
+  email         String      @unique
+  phone         String?     @unique
   hashPwd       String?
-  hashedRt      String?   
+  hashedRt      String?
+  timezone      String?
+  role          Role?        
+
+  pushTokens    PushToken[]
 
   @@map("users")
+}
+
+model PushToken {
+  id            Int      @id @default(autoincrement())
+  createdAt     DateTime @default(now())
+  
+  token         String   @unique
+  platform      Platform
+  
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("push_tokens")
+}
+
+enum Role {
+  Doctor
+  Patient
+}
+
+enum Platform {
+  ios
+  android
 }

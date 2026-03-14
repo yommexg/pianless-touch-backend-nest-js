@@ -34,14 +34,16 @@
     "@types/passport-jwt": "^4.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "expo-server-sdk": "^6.1.0",
     "ioredis": "^5.10.0",
     "joi": "^18.0.2",
     "nestjs-twilio": "^4.4.0",
-    "nodemailer": "^8.0.1",
+    "nodemailer": "^8.0.2",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "twilio": "^5.13.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -95,7 +97,9 @@
       "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
       "^@app/filters(|/.*)$": "<rootDir>/libs/filters/src/$1",
       "^@app/mail(|/.*)$": "<rootDir>/libs/mail/src/$1",
+      "^@app/notifications(|/.*)$": "<rootDir>/libs/notifications/src/$1",
       "^@app/prisma(|/.*)$": "<rootDir>/libs/prisma/src/$1",
+      "^@app/push-notifications(|/.*)$": "<rootDir>/libs/push-notifications/src/$1",
       "^@app/sms(|/.*)$": "<rootDir>/libs/sms/src/$1",
       "^@app/verify(|/.*)$": "<rootDir>/libs/verify/src/$1",
       "^y/logger(|/.*)$": "<rootDir>/libs/logger/src/$1",
