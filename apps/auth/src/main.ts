@@ -6,7 +6,6 @@ import { AuthModule } from './auth.module';
 import { LoggerService } from '@app/logger';
 import {
   GlobalExceptionsFilter,
-  MailExceptionsFilter,
   PrismaExceptionsFilter,
   TwilioExceptionsFilter,
 } from '@app/filters';
@@ -23,7 +22,6 @@ async function bootstrap() {
   app.useGlobalFilters(
     new GlobalExceptionsFilter(logger),
     new PrismaExceptionsFilter(logger, adapterHost),
-    new MailExceptionsFilter(logger),
     new TwilioExceptionsFilter(logger, adapterHost),
   );
 

@@ -161,13 +161,13 @@
         "tsConfigPath": "libs/prisma/tsconfig.lib.json"
       }
     },
-    "push-notifications": {
+    "expo-notifications": {
       "type": "library",
-      "root": "libs/push-notifications",
+      "root": "libs/expo-notifications",
       "entryFile": "index",
-      "sourceRoot": "libs/push-notifications/src",
+      "sourceRoot": "libs/expo-notifications/src",
       "compilerOptions": {
-        "tsConfigPath": "libs/push-notifications/tsconfig.lib.json"
+        "tsConfigPath": "libs/expo-notifications/tsconfig.lib.json"
       }
     },
     "records": {

@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
   Expo,
@@ -11,14 +7,16 @@ import {
   ExpoPushTicket,
 } from 'expo-server-sdk';
 import { PrismaService } from '@app/prisma';
+import { ExpoPushException } from '@app/filters';
+import { LoggerService } from '@app/logger';
 
 @Injectable()
-export class PushNotificationsService {
+export class ExpoNotificationsService {
   private expo: Expo;
-  private readonly logger = new Logger(PushNotificationsService.name);
 
   constructor(
     private readonly config: ConfigService,
+    private readonly logger: LoggerService,
     private readonly prisma: PrismaService,
   ) {
     this.expo = new Expo({
@@ -67,28 +65,35 @@ export class PushNotificationsService {
       ttl,
     } = params;
 
+    // Inside ExpoNotificationsService
     if (expiration !== undefined && ttl !== undefined) {
-      this.logger.warn(
-        'Cannot provide both "expiration" and "ttl". Please choose one.',
-      );
+      throw new BadRequestException({
+        message:
+          'Ambiguous notification duration: Cannot provide both "expiration" and "ttl".',
+        source: 'EXPO_NOTIFICATION',
+      });
     }
 
     if (pushTokens.length === 0) {
-      this.logger.warn(
-        'No push tokens provided to service',
-        'PushNotificationsService',
-      );
-      return { success: false };
+      throw new BadRequestException({
+        message:
+          'Notification delivery failed: At least one valid push token must be provided.',
+        source: 'EXPO_NOTIFICATION',
+      });
     }
 
     const messages: ExpoPushMessage[] = [];
 
     for (const token of pushTokens) {
       if (!Expo.isExpoPushToken(token)) {
-        this.logger.error(
-          `Invalid Expo push token: ${token as string}`,
-          'PushNotificationsService',
+        const invalidToken = String(token);
+
+        this.logger.warn(
+          `Skipping invalid Expo push token: ${invalidToken}`,
+          ExpoNotificationsService.name,
         );
+        await this.removeInvalidToken(invalidToken);
+
         continue;
       }
 
@@ -118,16 +123,9 @@ export class PushNotificationsService {
     const chunks = this.expo.chunkPushNotifications(messages);
     const tickets: ExpoPushTicket[] = [];
 
-    try {
-      for (const chunk of chunks) {
-        const ticketChunk = await this.expo.sendPushNotificationsAsync(chunk);
-        tickets.push(...ticketChunk);
-      }
-    } catch (error) {
-      this.logger.error('Error sending push notifications', error);
-      throw new InternalServerErrorException(
-        'Failed to send push notifications',
-      );
+    for (const chunk of chunks) {
+      const ticketChunk = await this.expo.sendPushNotificationsAsync(chunk);
+      tickets.push(...ticketChunk);
     }
 
     const receiptSummary = await this.handleReceipts(tickets, messages);
@@ -135,12 +133,13 @@ export class PushNotificationsService {
       `Push Cleanup Complete: ${receiptSummary.processed} messages processed, ` +
         `${receiptSummary.removed} tokens removed, ` +
         `${receiptSummary.errors} delivery errors found.`,
-      'PushNotificationsService',
+      ExpoNotificationsService.name,
     );
 
     return {
       success: true,
       message: 'Push notifications processed',
+      data: receiptSummary,
     };
   }
 
@@ -151,19 +150,19 @@ export class PushNotificationsService {
     let removedCount = 0;
     let errorCount = 0;
 
-    // 1. Handle Immediate Ticket Errors
     for (const [index, ticket] of tickets.entries()) {
       if (ticket.status === 'error') {
         errorCount++;
         if (ticket.details?.error === 'DeviceNotRegistered') {
           const token = messages[index].to;
-          this.removeInvalidToken(Array.isArray(token) ? token[0] : token);
+          await this.removeInvalidToken(
+            Array.isArray(token) ? token[0] : token,
+          );
           removedCount++;
         }
       }
     }
 
-    // 2. Handle Receipt ID Chunks
     const receiptIds = tickets
       .filter((t): t is ExpoPushSuccessTicket => t.status === 'ok')
       .map((t) => t.id);
@@ -179,24 +178,21 @@ export class PushNotificationsService {
     const chunks = this.expo.chunkPushNotificationReceiptIds(receiptIds);
 
     for (const chunk of chunks) {
-      try {
-        const receipts =
-          await this.expo.getPushNotificationReceiptsAsync(chunk);
-        for (const receiptId in receipts) {
-          const receipt = receipts[receiptId];
-          if (receipt.status === 'error') {
-            errorCount++;
-            if (receipt.details?.error === 'DeviceNotRegistered') {
-              const token = receipt.details.expoPushToken;
-              if (token) {
-                this.removeInvalidToken(token);
-                removedCount++;
-              }
+      const receipts = await this.expo.getPushNotificationReceiptsAsync(chunk);
+
+      for (const receiptId in receipts) {
+        const receipt = receipts[receiptId];
+
+        if (receipt.status === 'error') {
+          if (receipt.details?.error === 'DeviceNotRegistered') {
+            const token = receipt.details.expoPushToken;
+            if (token) {
+              await this.removeInvalidToken(token);
             }
           }
+
+          throw new ExpoPushException(receipt);
         }
-      } catch (e) {
-        this.logger.error('Failed to fetch some receipts', e);
       }
     }
 
@@ -207,15 +203,14 @@ export class PushNotificationsService {
     };
   }
 
-  private removeInvalidToken(token: string) {
-    try {
-      //   await this.prisma.user.updateMany({
-      //     where: { pushToken: token },
-      //     data: { pushToken: null },
-      //   });
-      this.logger.warn(`🗑️ Removed invalid push token from DB: ${token}`);
-    } catch (error) {
-      this.logger.error(`Failed to remove token ${token} from database`, error);
-    }
+  private async removeInvalidToken(token: string) {
+    await this.prisma.pushToken.delete({
+      where: { token },
+    });
+
+    this.logger.log(
+      `🗑️ Deleted invalid push token from DB: ${token}`,
+      ExpoNotificationsService.name,
+    );
   }
 }

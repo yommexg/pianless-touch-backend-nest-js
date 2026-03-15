@@ -36,13 +36,24 @@ export class AuthService {
 
   async requestOtp(dto: RequestEmailOtpDto): Promise<AuthReturnProps> {
     const { email } = dto;
+
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (user) {
+      throw new ConflictException({
+        message: `User with Email ${email} already exists`,
+        source: 'AUTH_REQUEST_OTP',
+      });
+    }
+
     const otp = this.generateOTP();
     const redisKey = `otp:${email}`;
 
     await this.redis.set(redisKey, otp, 'EX', 300);
 
     console.log(otp);
-
     // await this.mail.sendOtpEmail(email, otp);
     this.logger.log(`OTP email sent successfully to ${email}`, 'AuthService');
 
@@ -62,19 +73,21 @@ export class AuthService {
     const storedOtp = await this.redis.get(redisKey);
 
     if (!storedOtp) {
-      throw new NotFoundException(
-        `No OTP found for ${email} or it has expired.`,
-      );
+      throw new NotFoundException({
+        message: `No OTP found for ${email} or it has expired.`,
+        source: 'AUTH_VERIFY_OTP',
+      });
     }
 
     if (storedOtp !== otp) {
-      throw new UnauthorizedException(`Incorrect OTP for ${email}.`);
+      throw new UnauthorizedException({
+        message: `Incorrect OTP for ${email}.`,
+        source: 'AUTH_VERIFY_OTP',
+      });
     }
 
-    await this.prisma.user.upsert({
-      where: { email },
-      update: {},
-      create: {
+    await this.prisma.user.create({
+      data: {
         email,
       },
     });
@@ -100,7 +113,10 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found.`);
+      throw new NotFoundException({
+        message: `User with email ${email} not found.`,
+        source: 'AUTH_REQUEST_PHONE_OTP',
+      });
     }
 
     const userWithThisPhone = await this.prisma.user.findUnique({
@@ -110,11 +126,12 @@ export class AuthService {
     if (userWithThisPhone) {
       const isOwnPhone = userWithThisPhone.email === email;
 
-      throw new ConflictException(
-        isOwnPhone
+      throw new ConflictException({
+        message: isOwnPhone
           ? `This phone number is already linked to your account.`
           : `This phone number is already in use by another account.`,
-      );
+        source: 'AUTH_REQUEST_PHONE_OTP',
+      });
     }
 
     await this.sms.sendPhoneOtp(phone);
